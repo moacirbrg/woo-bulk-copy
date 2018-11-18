@@ -6,7 +6,7 @@
  * Author:               Moacir Braga
  * Version:              0.0.1
  * License:              GPLv2 or later
- * Text Domain:          woo-swissknife
+ * Text Domain:          woo-bulk-copy
  * Domain Path:          /languages
  * WC requires at least: 4.9.0
  * WC tested up to:      4.9.8

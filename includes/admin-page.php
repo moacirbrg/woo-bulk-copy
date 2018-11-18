@@ -28,7 +28,7 @@ class AdminPage {
 		}
 		
 		// Header
-		Builder::show_page_header( __( 'Product management', WOO_BULKCOPY ) );
+		Builder::show_page_header( __( 'Bulk copy', WOO_BULKCOPY ) );
 		Builder::show_form_begin( WOO_BULKCOPY );
 		
 		// Page

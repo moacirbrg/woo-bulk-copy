@@ -1,0 +1,138 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Bulk Copy\n"
+"POT-Creation-Date: 2018-11-17 23:08-0200\n"
+"PO-Revision-Date: 2018-11-17 23:09-0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: woo-bulk-copy.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: includes/admin-page.php:23
+msgid "Products have been added successfully"
+msgstr "Os produtos foram atualizados com sucesso"
+
+#: includes/admin-page.php:31 includes/bulk-copy.php:20
+#: includes/bulk-copy.php:21
+msgid "Bulk copy"
+msgstr "Atualização em massa"
+
+#: includes/admin-page.php:35
+msgid "Template"
+msgstr "Modelo"
+
+#: includes/admin-page.php:36
+msgid "Select the fields you would like to copy from template"
+msgstr "Selecione os campos que você gostaria de copiar do modelo"
+
+#: includes/admin-page.php:39
+msgid "Products to update"
+msgstr "Produtos para atualizar"
+
+#: includes/admin-page.php:40
+msgid "Select a group of product to be updated"
+msgstr "Selecione um grupo de produtos para ser atualizado"
+
+#: includes/admin-page.php:43
+msgid "Update products"
+msgstr "Atualizar produtos"
+
+#: includes/admin-page.php:55 includes/admin-page.php:105
+msgid "Product"
+msgstr "Produto"
+
+#: includes/admin-page.php:56
+msgid "ID of the product to be copied."
+msgstr "ID do produto a ser copiado."
+
+#: includes/admin-page.php:61
+msgid "Categories"
+msgstr "Categorias"
+
+#: includes/admin-page.php:66
+msgid "Weight"
+msgstr "Peso"
+
+#: includes/admin-page.php:71
+msgid "Dimensions"
+msgstr "Dimensões"
+
+#: includes/admin-page.php:76
+msgid "Shipping discount"
+msgstr "Descontos no frete"
+
+#: includes/admin-page.php:81
+msgid "Attributes"
+msgstr "Atributos"
+
+#: includes/admin-page.php:86
+msgid "Variations"
+msgstr "Variações"
+
+#: includes/admin-page.php:91
+msgid "Regular price"
+msgstr "Preço regular"
+
+#: includes/admin-page.php:96
+msgid "Sale price"
+msgstr "Preço de venda"
+
+#: includes/admin-page.php:106
+msgid "ID of the product to be updated."
+msgstr "ID do produto a ser atualizado."
+
+#: includes/admin-page.php:111
+msgid "Category"
+msgstr "Categoria"
+
+#: includes/admin-page.php:112
+msgid "Products from this category will be updated."
+msgstr "Os produtos desta categoria serão atualizados."
+
+#: includes/admin-page.php:117
+msgid "All products"
+msgstr "Todos os produtos"
+
+#: includes/admin-page.php:131
+msgid "Select a category"
+msgstr "Selecione uma categoria"
+
+#: includes/admin-page.php:138
+msgid "You must set a product to be the copied."
+msgstr "Você deve definir um produto para ser copiado."
+
+#: includes/admin-page.php:257
+msgid "You must set a product or category to be updated."
+msgstr "Você deve definir um produto ou uma categoria a serem atualizados."
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce Bulk Copy"
+msgstr "WooCommerce Bulk Copy"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/moacirbrg/woo-swissknife"
+msgstr "https://github.com/moacirbrg/woo-swissknife"
+
+#. Description of the plugin/theme
+msgid "Utilities to automate WooCommerce stores"
+msgstr "Utilitários para automatizar lojas com WooCommerce"
+
+#. Author of the plugin/theme
+msgid "Moacir Braga"
+msgstr "Moacir Braga"
+
+#~ msgid "Product management"
+#~ msgstr "Gestão de produtos"
