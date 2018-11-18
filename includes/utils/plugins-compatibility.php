@@ -31,7 +31,7 @@ class PluginsCompatibility {
 	 * @return boolean
 	 */
 	public static function woo_shipping_discount_is_enabled() {
-		return class_exists( 'ShippingDiscount' );
+		return class_exists( 'Woo_ShippingDiscount' );
 	}
 	
 	/**
