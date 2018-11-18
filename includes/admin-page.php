@@ -5,6 +5,7 @@ use WooBulkCopy\Utils\OptionsPageBuilder as Builder;
 use WooBulkCopy\Utils\CheckboxField;
 use WooBulkCopy\Utils\NumberField;
 use WooBulkCopy\Utils\SelectField;
+use WooBulkCopy\Utils\PluginsCompatibility as Plugins;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -69,9 +70,9 @@ class AdminPage {
 				'dimensions',
 				__( 'Dimensions', WOO_BULKCOPY ) ),
 			new CheckboxField(
-				'copy-shipping-discount',
+				'copy-woo-shipping-discount',
 				'template_data[]',
-				'shipping-discount',
+				'woo-shipping-discount',
 				__( 'Shipping discount', WOO_BULKCOPY ) ),
 			new CheckboxField(
 				'copy-attributes',
@@ -84,10 +85,15 @@ class AdminPage {
 				'variations',
 				__( 'Variations', WOO_BULKCOPY ) ),
 			new CheckboxField(
-				'copy-price',
+				'copy-regular-price',
 				'template_data[]',
-				'price',
-				__( 'Price', WOO_BULKCOPY ) )
+				'regular-price',
+				__( 'Regular price', WOO_BULKCOPY ) ),
+			new CheckboxField(
+				'copy-sale-price',
+				'template_data[]',
+				'sale-price',
+				__( 'Sale price', WOO_BULKCOPY ) )
 		];
 	}
 	
@@ -104,6 +110,11 @@ class AdminPage {
 				self::get_product_categories(),
 				__( 'Category', WOO_BULKCOPY ),
 				__( 'Products from this category will be updated.', WOO_BULKCOPY ) ),
+			new CheckboxField(
+				'all-products',
+				'all-products',
+				'true',
+				__( 'All products', WOO_BULKCOPY ) )
 		];
 	}
 	
@@ -127,38 +138,42 @@ class AdminPage {
     		throw new \Exception( __( 'You must set a product to be the copied.', WOO_BULKCOPY ) );
     	}
     	
-    	$fields_to_copy = array(
-    		'categories'        => false,
-    		'weight'            => false,
-    		'dimensions'        => false,
-    		'shipping-discount' => false,
-    		'attributes'        => false,
-    		'variations'        => false,
-    		'price'             => false
+    	$data_to_copy = array(
+    		'categories'            => false,
+    		'weight'                => false,
+    		'dimensions'            => false,
+    		'woo-shipping-discount' => false,
+    		'attributes'            => false,
+    		'variations'            => false,
+    		'regular-price'         => false,
+    		'sale-price'            => false
     	);
     	
     	if ( isset( $form['template_data'] ) ) {
     		foreach ( $form['template_data'] as $item ) {
     			switch ( $item ) {
-    				case 'categories': $fields_to_copy['categories'] = true;
+    				case 'categories': $data_to_copy['categories'] = true;
     				break;
     				
-    				case 'weight': $fields_to_copy['weight'] = true;
+    				case 'weight': $data_to_copy['weight'] = true;
     				break;
     				
-    				case 'dimensions': $fields_to_copy['dimensions'] = true;
+    				case 'dimensions': $data_to_copy['dimensions'] = true;
     				break;
     				
-    				case 'shipping-discount': $fields_to_copy['shipping-discount'] = true;
+    				case 'woo-shipping-discount': $data_to_copy['woo-shipping-discount'] = true;
     				break;
     				
-    				case 'attributes': $fields_to_copy['attributes'] = true;
+    				case 'attributes': $data_to_copy['attributes'] = true;
     				break;
     				
-    				case 'variations': $fields_to_copy['variations'] = true;
+    				case 'variations': $data_to_copy['variations'] = true;
     				break;
     				
-    				case 'price': $fields_to_copy['price'] = true;
+    				case 'regular-price': $data_to_copy['regular-price'] = true;
+    				break;
+    				
+    				case 'sale-price': $data_to_copy['sale-price'] = true;
     				break;
     			}
     		}
@@ -166,21 +181,28 @@ class AdminPage {
     	
     	return [
     		'product_id' => intval( $form['template_id'] ),
-    		'product_data' => $fields_to_copy
+    		'data_to_copy' => $data_to_copy
     	];
     }
 	
-	public static function get_product_data( $product_id, $field_to_copy ) {
-		/** @var WC_Product */
-		$product = wc_get_product( $product_id );
-		
-		if ( ! $product instanceof \WC_Product ) {
-			throw new \Exception(
-				__( sprintf( 'Product %d not found.', $product_id ), WOO_BULKCOPY ) );
-		}
-		
-		$temp_meta = get_post_meta( $product_id, 'shipping_discount' );
-		$shipping_discount = count( $temp_meta ) > 0 ? $temp_meta[0] : null;
+    /**
+     * @param int $product_id
+     * @throws \Exception
+     * @return \WC_Product
+     */
+    public static function get_product( $product_id ) {
+    	$product = wc_get_product( $product_id );
+    	
+    	if ( ! $product instanceof \WC_Product ) {
+    		throw new \Exception(
+    			__( sprintf( 'Product %d not found.', $product_id ), WOO_BULKCOPY ) );
+    	}
+    	
+    	return $product;
+    }
+    
+	public static function get_product_data( $product_id ) {
+		$product = self::get_product( $product_id );
 		
 		/** @var \WP_Post[] */
 		$variations_post = get_posts( array(
@@ -199,12 +221,17 @@ class AdminPage {
 			);
 		}
 		
+		$yoast_primary_cat = Plugins::yoast_is_enabled() ? Plugins::yoast_get_primary_cat( $product_id ) : null;
+		$woo_shipping_discount = Plugins::woo_shipping_discount_is_enabled() ? Plugins::woo_shipping_discount_get_discount( $product_id ) : null;
+		
 		return [
 			'categories' => wc_get_product_cat_ids( $product_id ),
+			'yoast-primary-cat' => $yoast_primary_cat, 
 			'weight' => $product->get_weight(),
 			'dimensions' => $product->get_dimensions( false ),
-			'shipping-discount' => $shipping_discount,
+			'woo-shipping-discount' => $woo_shipping_discount,
 			'regular_price' => $product->get_regular_price(),
+			'sale_price' => $product->get_sale_price(),
 			'variations' => $variations,
 			'attributes' => $product->get_attributes(),
 		];
@@ -213,25 +240,125 @@ class AdminPage {
 	public static function process_page( $form ) {
 		$template = self::get_template_form_data( $form );
 		$product_id = $template['product_id'];
+		$data_to_copy = $template['data_to_copy'];
 		
-		$product_data = self::get_product_data( $product_id, $template['product_data'] );
+		$product_data = self::get_product_data( $product_id );
 		
 		if ( is_numeric( $form['update_product_id'] ) ) {
-			self::update_product( intval( $form['update_product_id'] ), $product_data );
+			self::update_product( intval( $form['update_product_id'] ), $product_data, $data_to_copy );
 		}
 		elseif ( is_numeric( $form['update_category_id'] ) ) {
-			self::update_products_from_category( intval( $form['update_category_id'] ), $product_data );
+			self::update_products_from_category( intval( $form['update_category_id'] ), $product_data, $data_to_copy );
+		}
+		elseif ( $form['all-products'] === 'true' ) {
+			self::update_all_products( $product_data, $data_to_copy );
 		}
 		else {
 			throw new \Exception( __( 'You must set a product or category to be updated.', WOO_BULKCOPY ) );
 		}
 	}
 	
-	public static function update_products_from_category( $category_id, $template_data ) {
-		die('category');
+	public static function update_all_products( $template_data, $data_to_copy ) {
+		$args = array(
+			'post_type' => 'product',
+			'posts_per_page' => 100000
+		);
+		
+		$query = new \WP_Query( $args );
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			self::update_product( $query->post->ID, $template_data, $data_to_copy );
+		}
 	}
 	
-	public static function update_product( $product_id, $template_data ) {
-		die('product');
+	public static function update_products_from_category( $category_id, $template_data, $data_to_copy ) {
+		$args = array(
+			'post_type' => 'product',
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'product_cat',
+					'field'    => 'id',
+					'terms'    => $category_id
+				),
+			),
+			'posts_per_page' => 100000
+		);
+		
+		$query = new \WP_Query( $args );
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			self::update_product( $query->post->ID, $template_data, $data_to_copy );
+		}
+	}
+	
+	public static function update_product( $product_id, $template_data, $data_to_copy ) {
+		/** @var \WC_Product */
+		$product = self::get_product( $product_id );
+		
+		if ( $data_to_copy['categories'] === true ) {
+			wp_set_object_terms( $product_id , $template_data['categories'], 'product_cat' );
+			
+			if ( Plugins::yoast_is_enabled() ) {
+				Plugins::yoast_set_primary_cat( $product_id, $template_data['yoast-primary-cat'] );
+			}
+		}
+		
+		if ( $data_to_copy['weight'] === true ) {
+			$product->set_weight( $template_data['weight'] );
+		}
+		
+		if ( $data_to_copy['dimensions'] === true ) {
+			$product->set_width( $template_data['dimensions']['width'] );
+			$product->set_height( $template_data['dimensions']['height'] );
+			$product->set_length( $template_data['dimensions']['length'] );
+		}
+		
+		if ( $data_to_copy['woo-shipping-discount'] === true ) {
+			Plugins::woo_shipping_discount_set_discount( $product_id, $template_data['woo-shipping-discount'] );
+		}
+		
+		if ( $data_to_copy['attributes'] === true ) {
+			$product->set_attributes( $template_data['attributes'] );
+		}
+		
+		if ( $data_to_copy['variations'] === true ) {
+			/** @var \WP_Post[] */
+			$variations_to_delete = get_posts( array(
+				'post_type' => 'product_variation',
+				'post_parent' => $product_id
+			) );
+			
+			foreach ( $variations_to_delete as $variation_to_delete ) {
+				wp_delete_post( $variation_to_delete->ID );
+			}
+			
+			foreach ( $template_data['variations'] as $template_variation ) {
+				$variation_id = wp_insert_post( array(
+					'post_title'   => 'Product #' . $product_id . ' Variation',
+					'post_content' => '',
+					'post_status'  => 'publish',
+					'post_parent'  => $product_id,
+					'post_type'    => 'product_variation'
+				) );
+				
+				$variation = new \WC_Product_Variation( $variation_id );
+				$variation->set_regular_price( $template_variation['regular_price'] );
+				$variation->set_weight( $template_variation['weight'] );
+				$variation->set_width( $template_variation['dimensions']['width'] );
+				$variation->set_height( $template_variation['dimensions']['height'] );
+				$variation->set_length( $template_variation['dimensions']['length'] );
+				$variation->save();
+			}
+		}
+		
+		if ( $data_to_copy['regular-price'] === true ) {
+			$product->set_regular_price( $template_data['regular_price'] );
+		}
+		
+		if ( $data_to_copy['sale-price'] === true ) {
+			$product->set_sale_price( $template_data['sale_price'] );
+		}
+		
+		$product->save();
 	}
 }

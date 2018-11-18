@@ -31,6 +31,7 @@ class BulkCopy {
 		include_once dirname( __FILE__ ) . '/utils/checkbox-field.php';
 		include_once dirname( __FILE__ ) . '/utils/number-field.php';
 		include_once dirname( __FILE__ ) . '/utils/select-field.php';
+		include_once dirname( __FILE__ ) . '/utils/plugins-compatibility.php';
 		include_once dirname( __FILE__ ) . '/admin-page.php';
 	}
 }
