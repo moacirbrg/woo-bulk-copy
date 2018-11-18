@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:          WooCommerce Bulk Copy
- * Plugin URI:           https://github.com/moacirbrg/woo-swissknife
- * Description:          Utilities to automate WooCommerce stores
+ * Plugin URI:           https://github.com/moacirbrg/woo-bulk-copy
+ * Description:          Bulk update for WooCommerce
  * Author:               Moacir Braga
  * Version:              0.0.1
  * License:              GPLv2 or later
