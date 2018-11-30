@@ -217,7 +217,9 @@ class AdminPage {
 			$variations[ $variation_id ] = array(
 				'regular_price' => $product_variation->get_regular_price(),
 				'weight' => $product_variation->get_weight(),
-				'dimensions' => $product_variation->get_dimensions( false )
+				'dimensions' => $product_variation->get_dimensions( false ),
+				'post_title' => $product_variation->get_title(),
+				'attributes' => $product_variation->get_variation_attributes()
 			);
 		}
 		
@@ -334,7 +336,7 @@ class AdminPage {
 			
 			foreach ( $template_data['variations'] as $template_variation ) {
 				$variation_id = wp_insert_post( array(
-					'post_title'   => 'Product #' . $product_id . ' Variation',
+					'post_title'   => $template_variation['post_title'],
 					'post_content' => '',
 					'post_status'  => 'publish',
 					'post_parent'  => $product_id,
@@ -347,6 +349,7 @@ class AdminPage {
 				$variation->set_width( $template_variation['dimensions']['width'] );
 				$variation->set_height( $template_variation['dimensions']['height'] );
 				$variation->set_length( $template_variation['dimensions']['length'] );
+				$variation->set_attributes( $template_variation['attributes'] );
 				$variation->save();
 			}
 		}
